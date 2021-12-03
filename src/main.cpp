@@ -10,19 +10,16 @@ Date: 13.12.2017
 
 #include <Arduino.h>
 #include <FastLED.h>
+#include <Arduino.h>
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
-#else
+#elif defined(ESP32)
 #include <WiFi.h>
-#endif
-
-//needed for library
-#include <DNSServer.h>
-#if defined(ESP8266)
-#include <ESP8266WebServer.h>
-#else
 #include <WebServer.h>
+#else
+#error Invalid platform
 #endif
+#include <DNSServer.h>
 #include <WiFiManager.h>
 #include <ArduinoOTA.h>
 
@@ -34,6 +31,8 @@ Date: 13.12.2017
 
 // builtin LED
 #define LED_BUILTIN 5
+
+WiFiManager wifiManager;
 
 // Initialize changeable global variables.
 uint8_t max_bright = 128;                                     // Overall brightness definition. It can be changed on the fly.
@@ -50,8 +49,6 @@ uint8_t thishue = 0;                                          // Starting hue va
 int8_t thisrot = 1;                                           // Hue rotation speed. Includes direction.
 uint8_t deltahue = 1;                                         // Hue change between pixels.
 bool thisdir = 0;                                             // I use a direction variable instead of signed math so I can use it in multiple routines.
-
-WiFiManager wifiManager;
 
 void rainbow_march() {                                           // The fill_rainbow call doesn't support brightness levels. You would need to change the max_bright value.
   if (thisdir == 0) thishue += thisrot; else thishue-= thisrot;  // I could use signed math, but 'thisdir' works with other routines.
@@ -109,7 +106,7 @@ void setupOTA() {
 
 void setup() {
   Serial.begin(115200);                                        // Initialize serial port for debugging.
-  wifiManager.autoConnect("WIFI CHRISTMAS LIGHTS");
+  wifiManager.autoConnect("CHRISTMAS LIGHTS");
   ArduinoOTA.setHostname("christmaslights");
   setupOTA();
 
